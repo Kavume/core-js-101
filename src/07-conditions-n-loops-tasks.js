@@ -93,8 +93,7 @@ function getSumBetweenNumbers(n1, n2) {
  *   10,10,10 =>  true
  */
 function isTriangle(a, b, c) {
-  if ((a + b > c) && (a + c > b) && (b + c > a)) return true;
-  return false;
+  return ((a + b > c) && (a + c > b) && (b + c > a));
 }
 
 
@@ -130,8 +129,11 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  return (rect1.top > rect2.top && rect1.top < rect2.top + rect2.height)
+    || (rect1.left > rect2.left && rect1.left < rect2.left + rect2.width)
+    || (rect1.left + rect1.width > rect2.left && rect1.left < rect2.left + rect2.width
+      && rect1.top + rect1.height > rect2.top);
 }
 
 
@@ -161,8 +163,11 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  const multX = (point.x - circle.center.x) * (point.x - circle.center.x);
+  const multY = (point.y - circle.center.y) * (point.y - circle.center.y);
+  const distance = multX + multY;
+  return distance < (circle.radius * circle.radius);
 }
 
 
@@ -292,8 +297,16 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  const arr = ccn.toString().split('').reverse().map((item, i) => {
+    if (i % 2 !== 0) {
+      return item * 2;
+    }
+    return Number(item);
+  })
+    .map((item) => ((item > 9) ? item - 9 : item));
+  const sumNum = arr.reduce((sum, cur) => sum + cur, 0);
+  return sumNum % 10 === 0;
 }
 
 /**
@@ -342,8 +355,28 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isClosed(ch) {
+  return [')', ']', '}', '>'].indexOf(ch) > -1;
+}
+
+function isBracketsBalanced(str) {
+  const stack = [];
+  const brackets = {
+    ')': '(',
+    ']': '[',
+    '}': '{',
+    '>': '<',
+  };
+  for (let i = 0; i < str.length; i += 1) {
+    const cur = str[i];
+
+    if (isClosed(cur)) {
+      if (brackets[cur] !== stack.pop()) return false;
+    } else {
+      stack.push(cur);
+    }
+  }
+  return stack.length === 0;
 }
 
 
